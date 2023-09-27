@@ -1,0 +1,79 @@
+{
+  "properties": [
+    {
+      "name": "eft.security.reptile.mail.host",
+      "type": "java.lang.String",
+      "description": "host.",
+      "defaultValue": "localhost"
+    },
+    {
+      "name": "eft.security.reptile.mail.port",
+      "type": "java.lang.Integer",
+      "description": "port.",
+      "defaultValue": 465
+    },
+    {
+      "name": "eft.security.reptile.mail.username",
+      "type": "java.lang.String",
+      "description": "username."
+    },
+    {
+      "name": "eft.security.reptile.mail.password",
+      "type": "java.lang.String",
+      "description": "password."
+    },
+    {
+      "name": "eft.security.reptile.mail.useSSL",
+      "type": "java.lang.Boolean",
+      "description": "useSSL.",
+      "defaultValue": false
+    },
+    {
+      "name": "eft.security.reptile.mail.nickname",
+      "type": "java.lang.Integer",
+      "description": "nickname."
+    },
+    {
+      "name": "eft.security.reptile.mail.to",
+      "type": "java.util.List",
+      "description": "需要发送的目标邮箱."
+    },
+    {
+      "name": "eft.security.reptile.mail.cc",
+      "type": "java.util.List",
+      "description": "需要抄送的目标邮箱."
+    },
+    {
+      "name": "eft.security.reptile.mail.title",
+      "type": "java.lang.String",
+      "description": "邮件标题."
+    },
+    {
+      "name": "eft.security.reptile.config.limit",
+      "type": "java.lang.Integer",
+      "description": "1s内访问接口达到limit次数时锁定当前ip.",
+      "defaultValue": 5
+    },
+    {
+      "name": "eft.security.reptile.config.lockTime",
+      "type": "java.lang.Integer",
+      "description": "锁定的ip多久可以释放，-1表示永远禁用.",
+      "defaultValue": -1
+    },
+    {
+      "name": "eft.security.reptile.config.lockIpPrefix",
+      "type": "java.lang.String",
+      "description": "锁定ip的redis前缀."
+    },
+    {
+      "name": "eft.security.reptile.config.lockRequestPrefix",
+      "type": "java.lang.String",
+      "description": "请求次数达到阈值的redis前缀."
+    },
+    {
+      "name": "eft.security.reptile.privateKey",
+      "type": "java.lang.String",
+      "description": "私钥，用于解密."
+    }
+  ]
+}
