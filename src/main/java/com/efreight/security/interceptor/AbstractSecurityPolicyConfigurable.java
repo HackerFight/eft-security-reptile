@@ -26,6 +26,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
@@ -55,6 +56,8 @@ public abstract class AbstractSecurityPolicyConfigurable implements HandlerInter
 
     protected static final Pattern PATTERN_FIRST = Pattern.compile(PATTERN_RULE_PART1);
     protected static final Pattern PATTERN_LAST = Pattern.compile(PATTERN_RULE_PART2);
+
+    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     @Resource
     private AntiCrawlerProperties antiCrawlerProperties;
@@ -161,7 +164,7 @@ public abstract class AbstractSecurityPolicyConfigurable implements HandlerInter
     protected MailContent createMailContext(HttpServletRequest request) {
         MailContent mailContent = new MailContent();
         String template = "{0} 使用 {1} 上存在不正常操作，怀疑正在尝试爬虫穿透系统予以报警，请及时核实检查！";
-        String context = MessageFormat.format(template, LocalDateTime.now(), IpUtils.getIpAddr(request));
+        String context = MessageFormat.format(template, formatter.format(LocalDateTime.now()), IpUtils.getIpAddr(request));
         mailContent.setContent(context);
         mailContent.setIsHtml(false);
 
