@@ -1,6 +1,5 @@
 package com.efreight.security.properties;
 
-import cn.hutool.extra.mail.Mail;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
@@ -21,12 +20,12 @@ public class AntiCrawlerProperties {
     /**
      * redis 配置，连接就用spring配置即可
      */
-    private Config config;
+    private RedisConfig redisConfig;
 
     /**
      * 邮箱配置
      */
-    private Mail mail;
+    private MailConfig mailConfig;
 
     /**
      * 私钥，用于解密
@@ -34,7 +33,7 @@ public class AntiCrawlerProperties {
     private String privateKey;
 
     @Data
-    public static class Config {
+    public static class RedisConfig {
 
         private Integer limit;
 
@@ -47,7 +46,7 @@ public class AntiCrawlerProperties {
 
     @Getter
     @Setter
-    public static class Mail {
+    public static class MailConfig {
 
         private boolean enable;
 
@@ -59,9 +58,9 @@ public class AntiCrawlerProperties {
 
         private String nickname;
 
-        private Integer port;
+        private Integer port = 465;
 
-        private boolean useSsl;
+        private boolean useSsl = true;
 
         private List<String> to;
 

@@ -1,72 +1,72 @@
 {
   "properties": [
     {
-      "name": "eft.security.reptile.mail.host",
+      "name": "eft.security.reptile.mailConfig.host",
       "type": "java.lang.String",
       "description": "host.",
       "defaultValue": "localhost"
     },
     {
-      "name": "eft.security.reptile.mail.port",
+      "name": "eft.security.reptile.mailConfig.port",
       "type": "java.lang.Integer",
       "description": "port.",
       "defaultValue": 465
     },
     {
-      "name": "eft.security.reptile.mail.username",
+      "name": "eft.security.reptile.mailConfig.username",
       "type": "java.lang.String",
       "description": "username."
     },
     {
-      "name": "eft.security.reptile.mail.password",
+      "name": "eft.security.reptile.mailConfig.password",
       "type": "java.lang.String",
       "description": "password."
     },
     {
-      "name": "eft.security.reptile.mail.useSSL",
+      "name": "eft.security.reptile.mailConfig.useSSL",
       "type": "java.lang.Boolean",
       "description": "useSSL.",
-      "defaultValue": false
+      "defaultValue": true
     },
     {
-      "name": "eft.security.reptile.mail.nickname",
+      "name": "eft.security.reptile.mailConfig.nickname",
       "type": "java.lang.Integer",
       "description": "nickname."
     },
     {
-      "name": "eft.security.reptile.mail.to",
+      "name": "eft.security.reptile.mailConfig.to",
       "type": "java.util.List",
       "description": "需要发送的目标邮箱."
     },
     {
-      "name": "eft.security.reptile.mail.cc",
+      "name": "eft.security.reptile.mailConfig.cc",
       "type": "java.util.List",
       "description": "需要抄送的目标邮箱."
     },
     {
-      "name": "eft.security.reptile.mail.title",
+      "name": "eft.security.reptile.mailConfig.title",
       "type": "java.lang.String",
       "description": "邮件标题."
     },
     {
-      "name": "eft.security.reptile.config.limit",
+      "name": "eft.security.reptile.redisConfig.limit",
       "type": "java.lang.Integer",
       "description": "1s内访问接口达到limit次数时锁定当前ip.",
       "defaultValue": 5
     },
     {
-      "name": "eft.security.reptile.config.lockTime",
+      "name": "eft.security.reptile.redisConfig.lockTime",
       "type": "java.lang.Integer",
       "description": "锁定的ip多久可以释放，-1表示永远禁用.",
       "defaultValue": -1
     },
     {
-      "name": "eft.security.reptile.config.lockIpPrefix",
+      "name": "eft.security.reptile.redisConfig.lockIpPrefix",
       "type": "java.lang.String",
       "description": "锁定ip的redis前缀."
     },
     {
-      "name": "eft.security.reptile.config.lockRequestPrefix",
+      "name": "eft.security.reptile.redisConfig.lockRequestPrefix",
       "type": "java.lang.String",
       "description": "请求次数达到阈值的redis前缀."
     },

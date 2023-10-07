@@ -3,6 +3,9 @@ package com.efreight.security.interceptor;
 import com.efreight.security.utils.IpUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.web.method.HandlerMethod;
 
 import javax.servlet.http.HttpServletRequest;
@@ -18,15 +21,13 @@ import javax.servlet.http.HttpServletResponse;
 public class SecurityPolicyInterceptor extends AbstractSecurityPolicyConfigurable {
 
 
-
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 
         //静态资源访问不进行检查
-        if (!(handler instanceof HandlerMethod)) {
+        if (!(handler instanceof HandlerMethod) || "/error".equals(request.getRequestURI())) {
             return true;
         }
-        log.info("请求地址url: {}, ip: {}", request.getRequestURI(), IpUtils.getIpAddr(request));
 
         boolean illegality = true;
         String policyKey = request.getHeader(POLICY_KEY);
@@ -60,6 +61,7 @@ public class SecurityPolicyInterceptor extends AbstractSecurityPolicyConfigurabl
 
 
         if (!illegality) {
+            log.info("非法请求地址url: {}, 非法请求ip: {}", request.getRequestURI(), IpUtils.getIpAddr(request));
             response.sendError(HttpServletResponse.SC_FORBIDDEN, "非法请求");
             sendWarnEmail(request);
         }

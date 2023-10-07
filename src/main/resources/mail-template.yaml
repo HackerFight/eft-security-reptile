@@ -5,9 +5,9 @@ eft:
         host: mail.eft.cn
         username: saas_helper@efreight.com.cn
         password: saas_helper.eFt20190712
-        nickname: '翌飞小云'
+        nickname: "????"
         port: 465
-        title: 爬虫告警
+        title: "????"
         to:
           - mayt@efreight.cn
           - wuting@efreight.cn

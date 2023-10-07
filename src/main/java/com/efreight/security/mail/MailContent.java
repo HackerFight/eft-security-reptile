@@ -36,7 +36,7 @@ public class MailContent {
     /**
      * 邮件内容是否为html
      */
-    private Boolean isHtml;
+    private Boolean isHtml = Boolean.FALSE;
     /**
      * 附件列表
      */

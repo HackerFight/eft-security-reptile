@@ -1,33 +1,31 @@
 package com.efreight.security.interceptor;
 
-import cn.hutool.core.lang.hash.Hash;
 import cn.hutool.crypto.SecureUtil;
 import cn.hutool.crypto.asymmetric.KeyType;
 import cn.hutool.crypto.asymmetric.RSA;
 import com.efreight.security.mail.EmailSendProcessor;
 import com.efreight.security.mail.MailContent;
-import com.efreight.security.mail.MailTemplate;
 import com.efreight.security.mail.MailTemplatePostProcessor;
 import com.efreight.security.properties.AntiCrawlerProperties;
+import com.efreight.security.utils.IpUtils;
 import lombok.Builder;;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.CommandLineRunner;
-import org.springframework.boot.autoconfigure.jms.JmsProperties;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.nio.charset.StandardCharsets;
+import java.text.MessageFormat;
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
@@ -36,7 +34,7 @@ import java.util.regex.Pattern;
  * @date 2023-09-25 11:40:48 Monday
  */
 @Slf4j
-public abstract class AbstractSecurityPolicyConfigurable implements HandlerInterceptor, InitializingBean, BeanFactoryAware, CommandLineRunner {
+public abstract class AbstractSecurityPolicyConfigurable implements HandlerInterceptor, InitializingBean, BeanFactoryAware {
 
     protected static final String POLICY_KEY = "by-security-policy-key";
     protected static final String BEHAVIOR_COLLECT = "behavior-list";
@@ -64,12 +62,13 @@ public abstract class AbstractSecurityPolicyConfigurable implements HandlerInter
     @Resource
     private RedisTemplate<String, Object> redisTemplate;
 
-    @Resource
+    @Autowired(required = false)
     private EmailSendProcessor emailSendProcessor;
 
-    protected BeanFactory beanFactory;
+    @Value("${eft.security.private.key}")
+    private String privateKey;
 
-    private MailTemplatePostProcessor mailTemplatePostProcessor;
+    protected BeanFactory beanFactory;
 
     /**
      * 私钥--解密
@@ -78,7 +77,11 @@ public abstract class AbstractSecurityPolicyConfigurable implements HandlerInter
      */
     protected SecureDecipherContext decipher(String policyContext) {
         try {
-            RSA rsa = SecureUtil.rsa(this.antiCrawlerProperties.getPrivateKey(), null);
+            String priKey = this.antiCrawlerProperties.getPrivateKey();
+            if (StringUtils.isBlank(priKey)) {
+                priKey = this.privateKey;
+            }
+            RSA rsa = SecureUtil.rsa(priKey, null);
             String context = rsa.decryptStr(policyContext, KeyType.PrivateKey, StandardCharsets.UTF_8);
             return SecureDecipherContext.builder().canDecipher(true).decipherContext(context).build();
         } catch (Exception e) {
@@ -108,15 +111,6 @@ public abstract class AbstractSecurityPolicyConfigurable implements HandlerInter
         return Boolean.TRUE.equals(redisTemplate.hasKey(defaultLockIp + ip));
     }
 
-    @Override
-    public void run(String... args) throws Exception {
-        try {
-            this.mailTemplatePostProcessor = this.beanFactory.getBean(MailTemplatePostProcessor.class);
-        } catch (BeansException e) {
-            //nothing to do
-        }
-    }
-
     /**
      * 1S内访问5次接口则禁用当前ip一小时
      * @param ip
@@ -139,12 +133,21 @@ public abstract class AbstractSecurityPolicyConfigurable implements HandlerInter
 
 
     protected void sendWarnEmail(HttpServletRequest request) {
+        if (!this.antiCrawlerProperties.getMailConfig().isEnable()) {
+            log.warn("没有发现email相关的配置属性，所以无法进行邮件的发送");
+            return;
+        }
+
+        MailContent mailContent = new MailContent();
         try {
-            MailContent mailContent = null;
-            if (this.mailTemplatePostProcessor != null) {
-                mailContent = mailTemplatePostProcessor.createMailContent(request);
-            }
-            emailSendProcessor.send(mailContent == null ? createMailContext(request) : mailContent);
+            MailTemplatePostProcessor bean = this.beanFactory.getBean(MailTemplatePostProcessor.class);
+            mailContent.setContent(bean.createMailContent(request));
+        } catch (BeansException e) {
+            mailContent = createMailContext(request);
+        }
+
+        try {
+            emailSendProcessor.send(mailContent);
         } catch (Exception e) {
             log.error("发送邮件失败", e);
         }
@@ -156,22 +159,18 @@ public abstract class AbstractSecurityPolicyConfigurable implements HandlerInter
     }
 
     protected MailContent createMailContext(HttpServletRequest request) {
-        Map<String, Object> dataMap = new HashMap<>();
-        dataMap.put("username", "fuyuanhui@efreight.cn");
-        dataMap.put("time", LocalDateTime.now());
-        dataMap.put("ip", request.getRemoteAddr());
-        MailTemplate template = MailTemplate.builder().path("classpath:template/email.ftl").dataMap(dataMap).build();
-        return MailContent.builder().template(template).build();
-    }
+        MailContent mailContent = new MailContent();
+        String template = "{0} 使用 {1} 上存在不正常操作，怀疑正在尝试爬虫穿透系统予以报警，请及时核实检查！";
+        String context = MessageFormat.format(template, LocalDateTime.now(), IpUtils.getIpAddr(request));
+        mailContent.setContent(context);
+        mailContent.setIsHtml(false);
 
-    protected MailContent emailMessage(HttpServletRequest request, Map<String, Object> parameters) {
-        return null;
+        return mailContent;
     }
-
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        AntiCrawlerProperties.Config config = this.antiCrawlerProperties.getConfig();
+        AntiCrawlerProperties.RedisConfig config = this.antiCrawlerProperties.getRedisConfig();
         if (config == null) {
             return;
         }

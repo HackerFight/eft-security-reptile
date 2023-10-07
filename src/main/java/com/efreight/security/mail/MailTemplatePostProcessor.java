@@ -8,5 +8,10 @@ import javax.servlet.http.HttpServletRequest;
  */
 public interface MailTemplatePostProcessor {
 
-    MailContent createMailContent(HttpServletRequest request);
+    /**
+     * 创建email发送的模板内容
+     * @param request
+     * @return
+     */
+    String createMailContent(HttpServletRequest request);
 }

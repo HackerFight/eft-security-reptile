@@ -41,15 +41,15 @@ public class EmailSendProcessor {
             // MimeMessageHelper对象，用来组装复杂邮件，其中构建方法中第二个参数为true，代表支持替代文本、内联元素和附件
             MimeMessageHelper helper = new MimeMessageHelper(message, true);
             // 发件人，不能省略
-            helper.setFrom(properties.getMail().getUsername(), properties.getMail().getNickname());
+            helper.setFrom(properties.getMailConfig().getUsername(), properties.getMailConfig().getNickname());
             // 收件人，可以是多个，不能省略
-            helper.setTo(ArrayUtil.toArray(properties.getMail().getTo(), String.class));
+            helper.setTo(ArrayUtil.toArray(properties.getMailConfig().getTo(), String.class));
             // 抄送人
-            if (ArrayUtil.isNotEmpty(properties.getMail().getCc())) {
-                helper.setCc(ArrayUtil.toArray(properties.getMail().getCc(), String.class));
+            if (ArrayUtil.isNotEmpty(properties.getMailConfig().getCc())) {
+                helper.setCc(ArrayUtil.toArray(properties.getMailConfig().getCc(), String.class));
             }
             // 邮件标题，可以省略，省略之后展示的是：<无标题>
-            helper.setSubject(this.properties.getMail().getTitle());
+            helper.setSubject(this.properties.getMailConfig().getTitle());
             if (null != mailContent.getTemplate()) {
                 // 通过模板设置邮件内容
                 helper.setText(FreeMarkerTemplateUtils.processTemplateIntoString(configuration.getTemplate(mailContent.getTemplate().getPath()), mailContent.getTemplate().getDataMap()), mailContent.getIsHtml());
