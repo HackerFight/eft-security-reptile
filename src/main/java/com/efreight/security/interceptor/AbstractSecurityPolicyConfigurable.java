@@ -40,6 +40,8 @@ public abstract class AbstractSecurityPolicyConfigurable implements HandlerInter
     protected static final String POLICY_KEY = "by-security-policy-key";
     protected static final String BEHAVIOR_COLLECT = "behavior-list";
 
+    protected static final String IGNORE_ERROR_URL = "/error";
+
     protected Integer limit = 5;
 
     protected Long lockTime = 3600L;
@@ -72,6 +74,17 @@ public abstract class AbstractSecurityPolicyConfigurable implements HandlerInter
     private String privateKey;
 
     protected BeanFactory beanFactory;
+
+    protected boolean ignoreErrorUrl(HttpServletRequest request) {
+        String url = request.getRequestURI();
+        String contextPath = request.getContextPath();
+        if(StringUtils.isNotEmpty(contextPath)) {
+            String substring = url.substring(contextPath.length());
+            return IGNORE_ERROR_URL.equals(substring);
+        }
+
+        return IGNORE_ERROR_URL.equals(url);
+    }
 
     /**
      * 私钥--解密
@@ -119,7 +132,7 @@ public abstract class AbstractSecurityPolicyConfigurable implements HandlerInter
      * @param ip
      */
     protected boolean reachLimitRequestTimes(String ip, String url) {
-        String key = defaultRequestTimes + ip + url;
+        final String key = defaultRequestTimes + ip + url;
         Boolean hasTimes = redisTemplate.hasKey(key);
         if (Boolean.TRUE.equals(hasTimes)) {
             Long count = redisTemplate.opsForValue().increment(key);
@@ -128,7 +141,7 @@ public abstract class AbstractSecurityPolicyConfigurable implements HandlerInter
                 return true;
             }
         } else {
-            redisTemplate.opsForValue().setIfAbsent(key, "1",1, TimeUnit.SECONDS);
+            redisTemplate.opsForValue().set(key, 1,1, TimeUnit.SECONDS);
         }
 
         return false;

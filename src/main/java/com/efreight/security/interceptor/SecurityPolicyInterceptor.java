@@ -25,7 +25,7 @@ public class SecurityPolicyInterceptor extends AbstractSecurityPolicyConfigurabl
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 
         //静态资源访问不进行检查
-        if (!(handler instanceof HandlerMethod) || "/error".equals(request.getRequestURI())) {
+        if (!(handler instanceof HandlerMethod) || ignoreErrorUrl(request)) {
             return true;
         }
 
