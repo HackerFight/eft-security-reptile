@@ -32,7 +32,7 @@ public class EmailSendProcessor {
     @Resource
     private AntiCrawlerProperties properties;
 
-    public void send(MailContent mailContent) throws Exception {
+    public void send(MailContent mailContent) {
         try {
             MimeMessage message = defaultMailSender.createMimeMessage();
             // MimeMessageHelper对象，用来组装复杂邮件，其中构建方法中第二个参数为true，代表支持替代文本、内联元素和附件
@@ -64,7 +64,7 @@ public class EmailSendProcessor {
             //发送邮件
             defaultMailSender.send(message);
             log.info("邮件发送成功");
-        } catch (MessagingException | IOException | TemplateException e) {
+        } catch (Exception e) {
             log.error("邮件发送失败", e);
         }
     }

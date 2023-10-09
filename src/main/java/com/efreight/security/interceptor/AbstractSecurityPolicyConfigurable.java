@@ -26,6 +26,8 @@ import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
@@ -59,6 +61,8 @@ public abstract class AbstractSecurityPolicyConfigurable implements HandlerInter
     protected static final Pattern PATTERN_LAST = Pattern.compile(PATTERN_RULE_PART2);
 
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+    protected final ExecutorService executor = Executors.newFixedThreadPool(2);
 
     @Resource
     private AntiCrawlerProperties antiCrawlerProperties;
@@ -161,10 +165,11 @@ public abstract class AbstractSecurityPolicyConfigurable implements HandlerInter
             mailContent = createMailContext(request);
         }
 
-        try {
+        MailContent copy = mailContent;
+        if (this.antiCrawlerProperties.getMailConfig().isEnableAsync()) {
+            this.executor.execute(() -> emailSendProcessor.send(copy));
+        } else {
             emailSendProcessor.send(mailContent);
-        } catch (Exception e) {
-            log.error("发送邮件失败", e);
         }
     }
 

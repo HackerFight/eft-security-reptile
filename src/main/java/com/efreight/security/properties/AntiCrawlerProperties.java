@@ -67,5 +67,7 @@ public class AntiCrawlerProperties {
         private List<String> cc;
 
         private String title;
+
+        private boolean enableAsync = false;
     }
 }
