@@ -66,6 +66,7 @@ public class EmailSendProcessor {
             }
             //发送邮件
             defaultMailSender.send(message);
+            log.info("邮件发送成功");
         } catch (MessagingException | IOException | TemplateException e) {
             log.error("邮件发送失败", e);
         }

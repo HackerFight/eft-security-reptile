@@ -39,11 +39,11 @@ public class SecurityPolicyInterceptor extends AbstractSecurityPolicyConfigurabl
         }
 
         SecureDecipherContext decipher = null;
-        if (illegality && (decipher = super.decipher(policyKey)).canDecipher()) {
+        if (illegality && !(decipher = super.decipher(policyKey)).canDecipher()) {
             illegality = false;
         }
 
-        if (illegality && super.match(decipher.getDecipherContext())) {
+        if (illegality && !super.match(decipher.getDecipherContext())) {
             log.error("安全策略token值不符合规则，疑似非法请求， ip 地址: {}, url: {}", ip, url);
             illegality = false;
         }
