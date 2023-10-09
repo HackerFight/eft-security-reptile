@@ -163,7 +163,7 @@ public abstract class AbstractSecurityPolicyConfigurable implements HandlerInter
 
     protected MailContent createMailContext(HttpServletRequest request) {
         MailContent mailContent = new MailContent();
-        String template = "{0} 使用 {1} 上存在不正常操作，怀疑正在尝试爬虫穿透系统予以报警，请及时核实检查！";
+        String template = "[{0}] 在IP为 [{1}] 的机器上存在不正常操作，怀疑正在尝试爬虫穿透系统予以报警，请及时核实检查！";
         String context = MessageFormat.format(template, formatter.format(LocalDateTime.now()), IpUtils.getIpAddr(request));
         mailContent.setContent(context);
         mailContent.setIsHtml(false);

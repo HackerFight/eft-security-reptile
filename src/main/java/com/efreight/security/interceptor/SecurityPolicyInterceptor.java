@@ -29,10 +29,12 @@ public class SecurityPolicyInterceptor extends AbstractSecurityPolicyConfigurabl
             return true;
         }
 
+        String url = request.getRequestURI();
+        String ip = IpUtils.getIpAddr(request);
         boolean illegality = true;
         String policyKey = request.getHeader(POLICY_KEY);
         if (StringUtils.isBlank(policyKey)) {
-            log.error("无法从请求头中获取安全策略token值，疑似非法请求， ip 地址： {}", IpUtils.getIpAddr(request));
+            log.error("无法从请求头中获取安全策略token值，疑似非法请求， ip 地址： {}, url: {}", ip, url);
             illegality = false;
         }
 
@@ -42,26 +44,26 @@ public class SecurityPolicyInterceptor extends AbstractSecurityPolicyConfigurabl
         }
 
         if (illegality && super.match(decipher.getDecipherContext())) {
-            log.error("安全策略token值不符合规则，请检查， ip 地址: {}", IpUtils.getIpAddr(request));
+            log.error("安全策略token值不符合规则，疑似非法请求， ip 地址: {}, url: {}", ip, url);
             illegality = false;
         }
 
 
         String behavior = request.getHeader(BEHAVIOR_COLLECT);
         if (illegality && StringUtils.isBlank(behavior)) {
-            log.error("无法检测到用户的手动操作行为，疑似非法请求， ip 地址: {}", IpUtils.getIpAddr(request));
+            log.error("无法检测到用户的手动操作行为，疑似非法请求， ip 地址: {}, url: {}", ip, url);
             illegality = false;
         }
 
         if (illegality && (ipIsLock(IpUtils.getIpAddr(request))
                 || reachLimitRequestTimes(IpUtils.getIpAddr(request), request.getRequestURI()))) {
-            log.error("当前请求的ip疑似非法请求，已经被锁定 ip 地址: {}", IpUtils.getIpAddr(request));
+            log.error("当前请求的ip疑似非法请求，已经被锁定 ip 地址: {}, url: {}", ip, url);
             illegality = false;
         }
 
 
         if (!illegality) {
-            log.info("非法请求地址url: {}, 非法请求ip: {}", request.getRequestURI(), IpUtils.getIpAddr(request));
+            log.error("准备邮件通知，非法请求地址url: {}, 非法请求ip: {}", url, ip);
             response.sendError(HttpServletResponse.SC_FORBIDDEN, "非法请求");
             sendWarnEmail(request);
         }

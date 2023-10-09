@@ -2,6 +2,7 @@ eft:
   security:
     reptile:
       mailConfig:
+        enable: true
         host: mail.eft.cn
         username: saas_helper@efreight.com.cn
         password: saas_helper.eFt20190712
@@ -16,4 +17,3 @@ eft:
         cc:
           - fuyuanhui@efreight.cn
         useSSL: true
-        enable: true
