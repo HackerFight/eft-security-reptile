@@ -39,7 +39,7 @@ public class AntiCrawlerPolicyAutoConfiguration implements WebMvcConfigurer {
         return new SecurityPolicyInterceptor();
     }
 
-    @ConditionalOnProperty(prefix = "eft.security.reptile.mailConfig", name = "enable", havingValue = "true")
+    @ConditionalOnProperty(prefix = "eft.security.reptile.mail-config", name = "enable", havingValue = "true")
     @Bean(name = "defaultMailSender")
     public JavaMailSender createMailSender(AntiCrawlerProperties properties) {
         JavaMailSenderImpl javaMailSender =new JavaMailSenderImpl();
@@ -59,7 +59,7 @@ public class AntiCrawlerPolicyAutoConfiguration implements WebMvcConfigurer {
     }
 
 
-    @ConditionalOnProperty(prefix = "eft.security.reptile.mailConfig", name = "enable", havingValue = "true")
+    @ConditionalOnProperty(prefix = "eft.security.reptile.mail-config", name = "enable", havingValue = "true")
     @Bean
     public EmailSendProcessor emailSendProcessor(){
         return new EmailSendProcessor();
