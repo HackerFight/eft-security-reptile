@@ -5,11 +5,8 @@ import cn.hutool.extra.template.TemplateException;
 import com.efreight.security.properties.AntiCrawlerProperties;
 import freemarker.template.Configuration;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
-import org.springframework.stereotype.Component;
 import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
 
 import javax.annotation.Resource;

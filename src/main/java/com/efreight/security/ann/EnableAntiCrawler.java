@@ -2,7 +2,6 @@ package com.efreight.security.ann;
 
 import com.efreight.security.autoconfigure.AntiCrawlerPolicyAutoConfiguration;
 import org.springframework.context.annotation.Import;
-import org.springframework.scheduling.annotation.SchedulingConfiguration;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
