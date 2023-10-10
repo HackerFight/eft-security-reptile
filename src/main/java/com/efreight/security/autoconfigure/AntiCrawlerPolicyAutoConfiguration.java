@@ -4,12 +4,22 @@ import com.efreight.security.interceptor.SecurityPolicyInterceptor;
 import com.efreight.security.mail.EmailSendProcessor;
 import com.efreight.security.properties.AntiCrawlerProperties;
 import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.annotation.Role;
+import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.serializer.GenericToStringSerializer;
+import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
+import org.springframework.data.redis.serializer.JdkSerializationRedisSerializer;
+import org.springframework.data.redis.serializer.StringRedisSerializer;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -23,6 +33,7 @@ import java.util.Properties;
  * @author fu yuan hui
  * @date 2023-09-26 11:34:40 Tuesday
  */
+@ConditionalOnWebApplication
 @PropertySource(value = "classpath:eft-private-key.properties")
 @EnableConfigurationProperties(AntiCrawlerProperties.class)
 @Configuration
@@ -63,6 +74,30 @@ public class AntiCrawlerPolicyAutoConfiguration implements WebMvcConfigurer {
     @Bean
     public EmailSendProcessor emailSendProcessor(){
         return new EmailSendProcessor();
+    }
+
+    /**
+     * 只要外部系统集成了spring-boot-starter-redis, 那么就会有 {@link RedisTemplate}, 所以这里的配置不会对外部系统有任何影响
+     */
+    @Configuration
+    public static class RedisConfig {
+
+        /**
+         * 要在 application.yaml 中配置了true才会生效。
+         */
+        @ConditionalOnProperty(prefix = "eft.security.reptile.redis-config", name = "enable", havingValue = "true")
+        @ConditionalOnMissingBean
+        @Bean
+        public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory redisConnectionFactory) {
+            RedisTemplate<String, Object> redisTemplate = new RedisTemplate<>();
+            redisTemplate.setConnectionFactory(redisConnectionFactory);
+            redisTemplate.setKeySerializer(new StringRedisSerializer());
+            redisTemplate.setHashKeySerializer(new StringRedisSerializer());
+            redisTemplate.setValueSerializer(new Jackson2JsonRedisSerializer<>(Object.class));
+            redisTemplate.setHashValueSerializer(new Jackson2JsonRedisSerializer<>(Object.class));
+
+            return redisTemplate;
+        }
     }
 }
 

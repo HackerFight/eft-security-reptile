@@ -54,6 +54,12 @@
       "description": "邮件标题."
     },
     {
+      "name": "eft.security.reptile.redis-config.enable",
+      "type": "java.lang.Boolean",
+      "description": "是否开启redis防刷和锁定ip的功能,默认是开启的.",
+      "defaultValue": true
+    },
+    {
       "name": "eft.security.reptile.redis-config.limit",
       "type": "java.lang.Integer",
       "description": "1s内访问接口达到limit次数时锁定当前ip.",
@@ -68,12 +74,12 @@
     {
       "name": "eft.security.reptile.redis-config.lock-ip-prefix",
       "type": "java.lang.String",
-      "description": "锁定ip的redis前缀."
+      "description": "锁定ip的redis前缀,方便去redis中查找."
     },
     {
       "name": "eft.security.reptile.redis-config.lock-request-prefix",
       "type": "java.lang.String",
-      "description": "请求次数达到阈值的redis前缀."
+      "description": "请求次数达到阈值的redis前缀,方便去redis中查找."
     },
     {
       "name": "eft.security.reptile.private-key",

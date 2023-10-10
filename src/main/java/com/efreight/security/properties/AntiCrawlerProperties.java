@@ -35,6 +35,8 @@ public class AntiCrawlerProperties {
     @Data
     public static class RedisConfig {
 
+        private boolean enable = true;
+
         private Integer limit;
 
         private Long lockTime;

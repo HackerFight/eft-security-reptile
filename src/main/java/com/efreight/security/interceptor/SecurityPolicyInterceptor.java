@@ -52,7 +52,7 @@ public class SecurityPolicyInterceptor extends AbstractSecurityPolicyConfigurabl
             illegality = false;
         }
 
-        if (illegality && (ipIsLock(ip) || reachLimitRequestTimes(ip, url))) {
+        if (illegality && enableRedis() && (ipIsLock(ip) || reachLimitRequestTimes(ip, url))) {
             log.error("当前请求的ip疑似非法请求，已经被锁定 ip 地址: {}, url: {}", ip, url);
             illegality = false;
         }

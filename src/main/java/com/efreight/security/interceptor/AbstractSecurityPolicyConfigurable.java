@@ -126,6 +126,14 @@ public abstract class AbstractSecurityPolicyConfigurable implements HandlerInter
         return PATTERN_FIRST.matcher(context).matches() || PATTERN_LAST.matcher(context).matches();
     }
 
+    protected boolean enableRedis() {
+        AntiCrawlerProperties.RedisConfig redisConfig = this.antiCrawlerProperties.getRedisConfig();
+        /**
+         * redisConfig == null 表示没有配置redis,那么默认就开启
+         */
+        return redisConfig == null || redisConfig.isEnable();
+    }
+
     protected boolean ipIsLock(String ip) {
         return Boolean.TRUE.equals(redisTemplate.hasKey(defaultLockIp + ip));
     }
@@ -152,7 +160,8 @@ public abstract class AbstractSecurityPolicyConfigurable implements HandlerInter
 
 
     protected void sendWarnEmail(HttpServletRequest request) {
-        if (!this.antiCrawlerProperties.getMailConfig().isEnable()) {
+        AntiCrawlerProperties.MailConfig mailConfig = this.antiCrawlerProperties.getMailConfig();
+        if (mailConfig == null || !mailConfig.isEnable()) {
             log.warn("没有发现email相关的配置属性，所以无法进行邮件的发送");
             return;
         }
