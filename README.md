@@ -6,6 +6,7 @@
    2.如果最后一位是数字，那么第7,14,21,28位置的字符要求必须是数字3
    3.如果最后一位是字符，则要求第7,14,21,28位置的元素为6,7,8,9这四个数字中的任意一个，
    4.除了特定位置上必须是数字外，其他位置的元素不做要求，可以是数字也可以是字符。
+4. 样例：dSAaAuS/7t4MiMIjJng+36Qni5s9pKPo5gO7cSbBK3fZCf+ljAZ8IHs/juuGg/IsBHNlQbxRAJIQt1suOXaVl+H/ygzOaHaNBkuqScqPRODSn8hLZVO/nc++j1q+vt4+p9ItM+nu8FCIxMykaoOKdMvPdFv5acv86SFt/FJDr8cLkAsrD9iGkMnaMeTT/yMr86AOt52aWGVDUzWO0Hw8Uw+clldWKCNwJD7RJ/CDrUv2OjlDV9E8LkT6zV05D2UwGOC0TZmYL7IoaLql1eRnBy13xNz01Mkoa2hByqX5tI+NN7l5lyBEOOdVsjy65ag8qpkd6nyXRi1vTugL6mefZg==
 
 ## 2. 请求头增加行为收集参数
    参数的key=behavior-list， 这个参数主要是用来记录用户是否有类人行为，比如是否点击了鼠标，是否有输入 库聚焦的工作，如果没有，则认为是机器人。
