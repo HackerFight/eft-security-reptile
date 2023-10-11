@@ -3,30 +3,31 @@ package com.efreight.security.autoconfigure;
 import com.efreight.security.interceptor.SecurityPolicyInterceptor;
 import com.efreight.security.mail.EmailSendProcessor;
 import com.efreight.security.properties.AntiCrawlerProperties;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.annotation.Role;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.serializer.GenericToStringSerializer;
 import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
-import org.springframework.data.redis.serializer.JdkSerializationRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import javax.annotation.Resource;
 import java.nio.charset.StandardCharsets;
+import java.util.Collections;
+import java.util.List;
 import java.util.Properties;
 
 /**
@@ -40,8 +41,30 @@ import java.util.Properties;
 @Role(BeanDefinition.ROLE_INFRASTRUCTURE)
 public class AntiCrawlerPolicyAutoConfiguration implements WebMvcConfigurer {
 
+    @Value("${server.servlet.context-path:}")
+    private String contextPath;
+
+    @Resource
+    private AntiCrawlerProperties properties;
+
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
+        AntiCrawlerProperties.MvcConfig mvcConfig = properties.getMvcConfig();
+        if (mvcConfig != null) {
+            List<String> pathPatterns = mvcConfig.getPathPatterns();
+            List<String> excludePathPatterns = mvcConfig.getExcludePathPatterns();
+            if (CollectionUtils.isEmpty(pathPatterns)) {
+                pathPatterns = Collections.singletonList("/**");
+            }
+
+            registry.addInterceptor(antiCrawlerInterceptor())
+                    .addPathPatterns(pathPatterns)
+                    .excludePathPatterns(CollectionUtils.isEmpty(excludePathPatterns) ? Collections.emptyList() : excludePathPatterns)
+                    .order(mvcConfig.getOrder());
+
+            return;
+        }
+
         registry.addInterceptor(antiCrawlerInterceptor()).addPathPatterns("/**");
     }
 

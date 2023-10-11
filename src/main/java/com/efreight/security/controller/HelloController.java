@@ -17,4 +17,9 @@ public class HelloController {
     public String hello(){
         return "Hello: " + LocalDateTime.now();
     }
+
+    @GetMapping("/test")
+    public String test(){
+        return "test: " + LocalDateTime.now();
+    }
 }

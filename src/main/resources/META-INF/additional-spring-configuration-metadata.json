@@ -85,6 +85,21 @@
       "name": "eft.security.reptile.private-key",
       "type": "java.lang.String",
       "description": "私钥，用于解密."
+    },
+    {
+      "name": "eft.security.reptile.mvc-config.path-patterns",
+      "type": "java.util.List",
+      "description": "拦截器需要拦截的url, 默认是拦截所有."
+    },
+    {
+      "name": "eft.security.reptile.mvc-config.exclude-path-patterns",
+      "type": "java.util.List",
+      "description": "拦截器不需要拦截的url, 默认是拦截所有."
+    },
+    {
+      "name": "eft.security.reptile.mvc-config.order",
+      "type": "java.lang.Integer",
+      "description": "制定拦截器的执行顺序."
     }
   ]
 }

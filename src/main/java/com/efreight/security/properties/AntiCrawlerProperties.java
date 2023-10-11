@@ -28,6 +28,11 @@ public class AntiCrawlerProperties {
     private MailConfig mailConfig;
 
     /**
+     * mvc 拦截配置
+     */
+    private MvcConfig mvcConfig;
+
+    /**
      * 私钥，用于解密
      */
     private String privateKey;
@@ -71,5 +76,25 @@ public class AntiCrawlerProperties {
         private String title;
 
         private boolean enableAsync = false;
+    }
+
+    @Getter
+    @Setter
+    public static class MvcConfig {
+
+        /**
+         * 需要拦截的url,默认是拦截所有
+         */
+        private List<String> pathPatterns;
+
+        /**
+         * 不需要拦截的url
+         */
+        private List<String> excludePathPatterns;
+
+        /**
+         * 执行拦截器顺序
+         */
+        private int order;
     }
 }
