@@ -135,7 +135,11 @@ public abstract class AbstractSecurityPolicyConfigurable implements HandlerInter
     }
 
     protected boolean ipIsLock(String ip) {
-        return Boolean.TRUE.equals(redisTemplate.hasKey(defaultLockIp + ip));
+        try {
+            return Boolean.TRUE.equals(redisTemplate.hasKey(defaultLockIp + ip));
+        } catch (Exception ex) {
+            throw new IllegalStateException("请检查redis链接是否正确，如果想关闭redis的防刷功能，可以使用 eft.security.reptile.redis-config.enable=false 进行关闭, " + ex.getMessage());
+        }
     }
 
     /**
